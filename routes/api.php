@@ -31,12 +31,16 @@ use App\Http\Controllers\ReservationController;
 // });
 
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/me', [AuthController::class, 'me'])->middleware(['auth:sanctum']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware(['auth:sanctum']);
-
+Route::post('/me', [AuthController::class, 'me']);
+Route::post('/logout', [AuthController::class, 'logout']);
 
 Route::apiResource('/user', UserController::class);
-Route::apiResource('/category', CategoryController::class);
-Route::apiResource('/room', RoomController::class)->middleware(['auth:sanctum']);
-Route::apiResource('/reservation', ReservationController::class);
-Route::apiResource('/tool', ToolController::class);
+
+Route::middleware('auth:sanctum')->group(function() {
+    Route::apiResource('/category', CategoryController::class);
+    Route::apiResource('/room', RoomController::class);
+    Route::apiResource('/reservation', ReservationController::class);
+    Route::apiResource('/tool', ToolController::class);
+});
+
+
