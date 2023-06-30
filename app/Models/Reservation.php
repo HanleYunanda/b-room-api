@@ -15,6 +15,7 @@ class Reservation extends Model
         'user_id',
         'room_id',
         'description',
+        'reservation_date',
         'check_in',
         'check_out',
     ];

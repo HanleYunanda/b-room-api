@@ -6,6 +6,7 @@ use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\ReservationResource;
+use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
 {
@@ -29,7 +30,7 @@ class ReservationController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|integer|exists:users,id',
+            'user_id' => 'integer|exists:users,id',
             'room_id' => 'required|integer|exists:rooms,id',
             'description' => 'required',
             'reservation_date' => 'required|date_format:Y-m-d',
@@ -45,6 +46,20 @@ class ReservationController extends Controller
             );
         } else {
             $validatedData = $validator->validated();
+            $validatedData['user_id'] = Auth::user()->id;
+            $otherReservations = Reservation::where('reservation_date', $validatedData['reservation_date'])->get();
+
+            if($otherReservations) {
+                foreach($otherReservations as $res) {
+                    if(($validatedData['check_in'] >= $res['check_in'] && $validatedData['check_in'] < $res['check_out']) || ($validatedData['check_out'] > $res['check_in'] && $validatedData['check_out'] <= $res['check_out'])) {
+                        return (new ApiRule)->responsemessage(
+                            "The room has been reserved",
+                            null,
+                            400
+                        );
+                    }
+                }
+            }
             if($reservation = Reservation::create($validatedData)) {
                 return (new ApiRule)->responsemessage(
                     "New reservation created successfully",
@@ -89,11 +104,12 @@ class ReservationController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|integer|exists:users,id',
+            'user_id' => 'integer|exists:users,id',
             'room_id' => 'required|integer|exists:rooms,id',
             'description' => 'required',
-            'check_in' => 'required|date_format:Y-m-d H:i:s',
-            'check_out' => 'required|date_format:Y-m-d H:i:s',
+            'reservation_date' => 'required|date_format:Y-m-d',
+            'check_in' => 'required|date_format:H:i:s',
+            'check_out' => 'required|date_format:H:i:s',
         ]);
 
         $reservation = Reservation::find($id);
@@ -112,7 +128,22 @@ class ReservationController extends Controller
                 422
             );
         } else {
-            if($reservation->update($validator->validated())) {
+            $validatedData = $validator->validated();
+            $validatedData['user_id'] = Auth::user()->id;
+            $otherReservations = Reservation::where('reservation_date', $validatedData['reservation_date'])->get();
+
+            if($otherReservations) {
+                foreach($otherReservations as $res) {
+                    if(($validatedData['check_in'] >= $res['check_in'] && $validatedData['check_in'] < $res['check_out']) || ($validatedData['check_out'] > $res['check_in'] && $validatedData['check_out'] <= $res['check_out'])) {
+                        return (new ApiRule)->responsemessage(
+                            "The room has been reserved",
+                            null,
+                            400
+                        );
+                    }
+                }
+            }
+            if($reservation->update($validatedData)) {
                 return (new ApiRule)->responsemessage(
                     "Reservation data updated",
                     new ReservationResource($reservation),
