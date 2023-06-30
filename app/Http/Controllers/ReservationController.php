@@ -43,7 +43,8 @@ class ReservationController extends Controller
                 422
             );
         } else {
-            if($reservation = Reservation::create($validator->validated())) {
+            $validatedData = $validator->validated();
+            if($reservation = Reservation::create($validatedData)) {
                 return (new ApiRule)->responsemessage(
                     "New reservation created successfully",
                     new ReservationResource($reservation),

@@ -32,9 +32,15 @@ class AuthController extends Controller
             );
         }
 
+        if ($user->role == 'ADMIN') {
+            $token = $user->createToken($user->name, ['admin-access'])->plainTextToken;
+        } else {
+            $token = $user->createToken($user->name, ['user-access'])->plainTextToken;
+        }
+
         $data = [
             'user' => $user,
-            'token' => $user->createToken($user->name)->plainTextToken,
+            'token' => $token,
         ];
         return (new ApiRule)->responsemessage(
             "Successfully logged in",

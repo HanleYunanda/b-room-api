@@ -35,12 +35,10 @@ Route::post('/me', [AuthController::class, 'me']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
 Route::apiResource('/user', UserController::class);
+Route::apiResource('/reservation', ReservationController::class);
 
-Route::middleware('auth:sanctum')->group(function() {
+Route::middleware(['auth:sanctum', 'abilities:admin-access'])->group(function() {
     Route::apiResource('/category', CategoryController::class);
     Route::apiResource('/room', RoomController::class);
-    Route::apiResource('/reservation', ReservationController::class);
     Route::apiResource('/tool', ToolController::class);
 });
-
-

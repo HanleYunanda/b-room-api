@@ -12,7 +12,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:sanctum', [
+        $this->middleware(['auth:sanctum'], [
             'except' => 'store'
         ]);
     }
@@ -39,7 +39,7 @@ class UserController extends Controller
             'name' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string',
-            'role' => 'required|in:STUDENT,LECTURER'
+            'role' => 'required|in:STUDENT,LECTURER,ADMIN'
         ]);
 
         if($validator->fails()) {
@@ -99,7 +99,7 @@ class UserController extends Controller
             'name' => 'required|string',
             'email' => 'required|email',
             'password' => 'required|string',
-            'role' => 'required|in:STUDENT,LECTURER'
+            'role' => 'required|in:STUDENT,LECTURER,ADMIN'
         ]);
 
         $user = User::find($id);
