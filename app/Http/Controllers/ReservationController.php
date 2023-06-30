@@ -32,8 +32,9 @@ class ReservationController extends Controller
             'user_id' => 'required|integer|exists:users,id',
             'room_id' => 'required|integer|exists:rooms,id',
             'description' => 'required',
-            'check_in' => 'required|date_format:Y-m-d H:i:s',
-            'check_out' => 'required|date_format:Y-m-d H:i:s',
+            'reservation_date' => 'required|date_format:Y-m-d',
+            'check_in' => 'required|date_format:H:i:s',
+            'check_out' => 'required|date_format:H:i:s',
         ]);
 
         if($validator->fails()) {

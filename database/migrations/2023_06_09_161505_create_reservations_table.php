@@ -18,8 +18,9 @@ return new class extends Migration
             $table->unsignedBigInteger('room_id');
             $table->foreign('room_id')->references('id')->on('rooms')->onUpdate('CASCADE')->onDelete('CASCADE');
             $table->text('description');
-            $table->timestampTz('check_in')->nullable();
-            $table->timestampTz('check_out')->nullable();
+            $table->date("reservation_date");
+            $table->time("check_in");
+            $table->time('check_out')->nullable();
             $table->timestamps();
         });
     }

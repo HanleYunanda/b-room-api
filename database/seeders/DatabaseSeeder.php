@@ -68,8 +68,9 @@ class DatabaseSeeder extends Seeder
             'user_id' => 1,
             'room_id' => 2,
             'description' => 'Rapat HIMTI',
-            'check_in' => '2023-06-09 09:00:00',
-            'check_out' => '2023-06-09 11:00:00'
+            'reservation_date' => '2023-06-09',
+            'check_in' => '09:00:00',
+            'check_out' => '11:00:00'
         ]);
 
         Tool::create([
